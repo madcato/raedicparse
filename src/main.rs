@@ -4,6 +4,7 @@ use std::io::Write;
 use clap::Parser;
 use scraper::{Html, Selector};
 use indicatif::{ProgressBar, ProgressStyle};
+use regex::Regex;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -59,20 +60,24 @@ fn main() -> std::io::Result<()>  {
             // Selector para la palabra
             let word_selector = Selector::parse("b.masnegrita").unwrap();
 
+            // Regex para eliminar "->", la palabra y el espacio antes del "1."
+            let re = Regex::new("-&gt;[^<]?<b class=\"masnegrita\">[^<]+</b>").unwrap();
+
             // Buscar el párrafo
             for p_element in document.select(&p_selector) {
-                // Extraer la palabra
+                // Extrae todo el HTML dentro de <p> y limpia la definición
+                let mut definicion_completa = p_element.inner_html();
+                definicion_completa = re.replace_all(&definicion_completa, "").to_string().trim().to_string();
+
                 let palabra = p_element.select(&word_selector)
                                     .next()
                                     .map(|n| n.inner_html())
                                     .unwrap_or_default();
-                
-                // Extraer todo el texto del párrafo y luego limpiarlo
-                let mut definicion = p_element.text().collect::<Vec<_>>().join("");
-                // Remover la palabra de la definición
-                definicion = definicion.replace(&format!("-&gt;{}", palabra), "").trim().to_string();
-                
-                writeln!(output_file, "{},{}", palabra, definicion)?;
+
+                let palabra_limpia = palabra.trim_end_matches(['.', ',']);
+                // println!("Palabra: {}", palabra_limpia);
+                // println!("Definición: {}", definicion_completa);
+                writeln!(output_file, "{}={}", palabra_limpia, definicion_completa)?;
             }
         }
         bar.inc(1);
