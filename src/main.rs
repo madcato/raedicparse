@@ -6,7 +6,7 @@ use scraper::{Html, Selector};
 use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
 
-/// Simple program to greet a person
+/// This proyect parses the "Diccionario de la RAE" in epub format and generates a text file which each line is "<word>=<definition>"
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
