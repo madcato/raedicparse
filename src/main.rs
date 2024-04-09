@@ -5,6 +5,7 @@ use clap::Parser;
 use scraper::{Html, Selector};
 use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
+use std::collections::HashMap;
 
 /// This proyect parses the "Diccionario de la RAE" in epub format and generates a text file which each line is "<word>=<definition>"
 #[derive(Parser, Debug)]
@@ -47,6 +48,8 @@ fn main() -> std::io::Result<()>  {
         .expect("Error al configurar el template")
         .progress_chars("#>-"));
 
+    let mut diccionario = HashMap::new();
+
     for path in paths {
         let path = path.unwrap().path();
         let file_name = path.file_name().unwrap().to_str().unwrap();
@@ -77,12 +80,17 @@ fn main() -> std::io::Result<()>  {
                 let palabra_limpia = palabra.trim_end_matches(['.', ',']);
                 // println!("Palabra: {}", palabra_limpia);
                 // println!("Definición: {}", definicion_completa);
+                diccionario.insert(palabra_limpia.to_string(), definicion_completa.to_string());
+
                 writeln!(output_file, "{}={}", palabra_limpia, definicion_completa)?;
+
+                
             }
         }
         bar.inc(1);
         // std::thread::sleep(std::time::Duration::from_millis(20000000));
     }
     bar.finish_with_message("Process completed!");
+    // print!("Diccionario: {:?}", diccionario);
     Ok(())
 }
