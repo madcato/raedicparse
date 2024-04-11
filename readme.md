@@ -15,10 +15,10 @@ This proyect parses the "Diccionario de la RAE" in epub format and generates a t
 Sample usage: 
 
 ```bash
-$ raedicparse --epub-path ~/Desktop/RAE.epub --output-path dict.txt
+$ cargo run -- --epub-path ~/Desktop/Diccionario\ de\ la\ Lengua\ Española.epub --output-path dic.txt
 ```
 
 ## Pending TODO
 
-- Remove all the htmo tag from the text ouput.
+- Remove all the html tag from the text ouput.
 - Create one line for each significance of each word. If a word has two meaning, separte it in two diferent lines.
